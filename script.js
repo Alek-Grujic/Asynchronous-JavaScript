@@ -66,21 +66,56 @@ const renderCountry = function (data, className = "") {
   //   countriesContainer.style.opacity = 1;
 };
 
+// const getCountryData = function (country) {
+//   fetch(`https://restcountries.com/v2/name/${country}`)
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error(`Country not found ${response.status}`);
+//       }
+//       return response.json();
+//     })
+//     .then((data) => {
+//       renderCountry(data[0]);
+//       const neighbour = data[0].borders[0];
+
+//       return fetch(`https://restcountries.com/v2/alpha/${neighbour}`);
+//     })
+//     .then((response) => response.json())
+//     .then((data) => renderCountry(data, "neighbour"))
+//     .catch((err) => {
+//       console.error(`${err}`);
+//       renderError(`Something went wrong - ${err} - Try again!`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
+
+// with helper function
+
+const getJSON = function (url, errMsg = "Something went wrong") {
+  return fetch(url).then((response) => {
+    if (!response.ok) {
+      throw new Error(`${errMsg} ${response.status}`);
+    }
+    return response.json();
+  });
+};
+
 const getCountryData = function (country) {
-  fetch(`https://restcountries.com/v2/name/${country}`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Country not found ${response.status}`);
-      }
-      return response.json();
-    })
+  getJSON(`https://restcountries.com/v2/name/${country}`, `Country not found`)
     .then((data) => {
       renderCountry(data[0]);
-      const neighbour = data[0].borders[0];
+      const neighbour = data[0].borders?.[0];
+      console.log(neighbour);
 
-      return fetch(`https://restcountries.com/v2/alpha/${neighbour}`);
+      if (!neighbour) throw new Error(`No neighbour found!`);
+
+      return getJSON(
+        `https://restcountries.com/v2/alpha/${neighbour}`,
+        `Country not found`,
+      );
     })
-    .then((response) => response.json())
     .then((data) => renderCountry(data, "neighbour"))
     .catch((err) => {
       console.error(`${err}`);
@@ -94,5 +129,5 @@ const getCountryData = function (country) {
 // getCountryData("portugal");
 
 btn.addEventListener("click", function () {
-  getCountryData("ddportugal");
+  getCountryData("australia");
 });
