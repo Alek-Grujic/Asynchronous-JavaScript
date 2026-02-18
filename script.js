@@ -2,6 +2,7 @@
 
 const btn = document.querySelector(".btn-country");
 const countriesContainer = document.querySelector(".countries");
+const containerImages = document.querySelector(".images");
 
 // NEW COUNTRIES API URL (use instead of the URL shown in videos):
 // https://restcountries.com/v2/name/portugal
@@ -221,123 +222,180 @@ GOOD LUCK 😀
 
 // challenge #1 OOP way
 
-class FindLocation {
-  constructor(lat, lng) {
-    this.lat = lat;
-    this.lng = lng;
-  }
+// class FindLocation {
+//   constructor(lat, lng) {
+//     this.lat = lat;
+//     this.lng = lng;
+//   }
 
-  init() {
-    btn.addEventListener("click", this.whereAmI.bind(this));
-  }
+//   init() {
+//     btn.addEventListener("click", this.whereAmI.bind(this));
+//   }
 
-  whereAmI() {
-    return this.getJSON(
-      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${this.lat}&longitude=${this.lng}`,
-    )
-      .then((data) => {
-        return this.getCountryData(data.countryName);
-      })
-      .catch((err) => {
-        console.error(err);
-        this.renderError(`Something went wrong - ${err.message}`);
-      })
-      .finally(this.displayContainer.bind(this));
-  }
+//   whereAmI() {
+//     return this.getJSON(
+//       `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${this.lat}&longitude=${this.lng}`,
+//     )
+//       .then((data) => {
+//         return this.getCountryData(data.countryName);
+//       })
+//       .catch((err) => {
+//         console.error(err);
+//         this.renderError(`Something went wrong - ${err.message}`);
+//       })
+//       .finally(this.displayContainer.bind(this));
+//   }
 
-  getJSON(url, errMsg = "Something went wrong") {
-    return fetch(url).then((response) => {
-      if (!response.ok) {
-        throw new Error(`${errMsg} ${response.status}`);
-      }
-      return response.json();
-    });
-  }
+//   getJSON(url, errMsg = "Something went wrong") {
+//     return fetch(url).then((response) => {
+//       if (!response.ok) {
+//         throw new Error(`${errMsg} ${response.status}`);
+//       }
+//       return response.json();
+//     });
+//   }
 
-  getCountryData(country) {
-    return this.getJSON(
-      `https://restcountries.com/v2/name/${country}`,
-      `Country not found`,
-    )
-      .then((data) => {
-        this.renderCountry(data[0]);
-        const neighbour = data[0].borders?.[0];
+//   getCountryData(country) {
+//     return this.getJSON(
+//       `https://restcountries.com/v2/name/${country}`,
+//       `Country not found`,
+//     )
+//       .then((data) => {
+//         this.renderCountry(data[0]);
+//         const neighbour = data[0].borders?.[0];
 
-        if (!neighbour) throw new Error(`No neighbour found!`);
+//         if (!neighbour) throw new Error(`No neighbour found!`);
 
-        return this.getJSON(
-          `https://restcountries.com/v2/alpha/${neighbour}`,
-          `Country not found`,
-        );
-      })
-      .then((data) => this.renderCountry(data, "neighbour"));
-  }
+//         return this.getJSON(
+//           `https://restcountries.com/v2/alpha/${neighbour}`,
+//           `Country not found`,
+//         );
+//       })
+//       .then((data) => this.renderCountry(data, "neighbour"));
+//   }
 
-  renderError(msg) {
-    countriesContainer.insertAdjacentText("beforeend", msg);
-    //   countriesContainer.style.opacity = 1;
-  }
+//   renderError(msg) {
+//     countriesContainer.insertAdjacentText("beforeend", msg);
+//     //   countriesContainer.style.opacity = 1;
+//   }
 
-  renderCountry(data, className = "") {
-    const html = `
-            <article class="country ${className}">
-            <img class="country__img" src="${data.flag}" />
-            <div class="country__data">
-            <h3 class="country__name">${data.name}</h3>
-            <h4 class="country__region">${data.region}</h4>
-            <p class="country__row"><span>👫</span>${(
-              +data.population / 1000000
-            ).toFixed(1)} people</p>
-            <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
-            <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-            </div>
-            </article>
-            `;
-    countriesContainer.insertAdjacentHTML("beforeend", html);
-    //   countriesContainer.style.opacity = 1;
-  }
+//   renderCountry(data, className = "") {
+//     const html = `
+//             <article class="country ${className}">
+//             <img class="country__img" src="${data.flag}" />
+//             <div class="country__data">
+//             <h3 class="country__name">${data.name}</h3>
+//             <h4 class="country__region">${data.region}</h4>
+//             <p class="country__row"><span>👫</span>${(
+//               +data.population / 1000000
+//             ).toFixed(1)} people</p>
+//             <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
+//             <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+//             </div>
+//             </article>
+//             `;
+//     countriesContainer.insertAdjacentHTML("beforeend", html);
+//     //   countriesContainer.style.opacity = 1;
+//   }
 
-  displayContainer() {
-    countriesContainer.style.opacity = 1;
-  }
-}
+//   displayContainer() {
+//     countriesContainer.style.opacity = 1;
+//   }
+// }
 
-const firstTry = new FindLocation(45.037, 72.873);
-firstTry.init();
+// const firstTry = new FindLocation(45.037, 72.873);
+// firstTry.init();
 
-///////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////
 
-console.log("Test start");
+// console.log("Test start");
 
-setTimeout(() => console.log("0 sec timer"), 0);
+// setTimeout(() => console.log("0 sec timer"), 0);
 
-Promise.resolve("Resolved promise 1").then((res) => console.log(res));
+// Promise.resolve("Resolved promise 1").then((res) => console.log(res));
 
-Promise.resolve("Resolved promise 2").then((res) => {
-  for (let i = 0; i < 10000; i++) {}
-  console.log(res);
-});
+// Promise.resolve("Resolved promise 2").then((res) => {
+//   for (let i = 0; i < 10000; i++) {}
+//   console.log(res);
+// });
 
-console.log("Test end");
+// console.log("Test end");
 
-//////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////
 
-const lotteryPromise = new Promise(function (resolve, reject) {
-  console.log("Lotter draw is happening");
-  setTimeout(function () {
-    if (Math.random() >= 0.5) {
-      resolve("You Win!");
-    } else {
-      reject(new Error("You lost your money"));
-    }
-  }, 2000);
-});
+// const lotteryPromise = new Promise(function (resolve, reject) {
+//   console.log("Lotter draw is happening");
+//   setTimeout(function () {
+//     if (Math.random() >= 0.5) {
+//       resolve("You Win!");
+//     } else {
+//       reject(new Error("You lost your money"));
+//     }
+//   }, 2000);
+// });
 
-lotteryPromise
-  .then((res) => console.log(res))
-  .catch((err) => console.error(err));
+// lotteryPromise
+//   .then((res) => console.log(res))
+//   .catch((err) => console.error(err));
 
-// promisifying
+// // promisifying
+
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+// wait(2)
+//   .then(() => {
+//     console.log("I waited 2 seconds");
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log("I waited 1 second");
+//   });
+
+///////////////////////////////////////
+// Coding Challenge #2
+
+/* 
+Build the image loading functionality that I just showed you on the screen.
+
+Tasks are not super-descriptive this time, so that you can figure out some stuff on your own. Pretend you're working on your own 😉
+
+PART 1
+1. Create a function 'createImage' which receives imgPath as an input. This function returns a promise which creates a new image (use document.createElement('img')) and sets the .src attribute to the provided image path. When the image is done loading, append it to the DOM element with the 'images' class, and resolve the promise. The fulfilled value should be the image element itself. In case there is an error loading the image ('error' event), reject the promise.
+
+If this part is too tricky for you, just watch the first part of the solution.
+
+PART 2
+2. Comsume the promise using .then and also add an error handler;
+3. After the image has loaded, pause execution for 2 seconds using the wait function we created earlier;
+4. After the 2 seconds have passed, hide the current image (set display to 'none'), and load a second image (HINT: Use the image element returned by the createImage promise to hide the current image. You will need a global variable for that 😉);
+5. After the second image has loaded, pause execution for 2 seconds again;
+6. After the 2 seconds have passed, hide the current image.
+
+TEST DATA: Images in the img folder. Test the error handler by passing a wrong image path. Set the network speed to 'Fast 3G' in the dev tools Network tab, otherwise images load too fast.
+
+GOOD LUCK 😀
+*/
+
+/*
+DIO 1
+
+Napravi funkciju 'createImage' koja prima imgPath kao ulazni parametar. Ova funkcija treba da vrati promise koji kreira novu sliku (koristi document.createElement('img')) i postavlja .src atribut na proslijeđenu putanju slike. Kada se slika učita, dodaj je u DOM element sa klasom 'images' i resolve-uj promise. Vrijednost koja se vraća kao fulfilled treba da bude sam image element. U slučaju da dođe do greške pri učitavanju slike ('error' događaj), reject-uj promise.
+
+DIO 2
+2. Konzumiraj promise koristeći .then i dodaj i error handler;
+3. Nakon što se slika učita, pauziraj izvršavanje na 2 sekunde koristeći wait funkciju koju smo ranije napravili;
+4. Nakon što prođu 2 sekunde, sakrij trenutnu sliku (postavi display na 'none') i učitaj drugu sliku (NAPOMENA: Koristi image element koji je vraćen iz createImage promise-a da sakriješ trenutnu sliku. Trebaće ti globalna varijabla za to);
+5. Nakon što se druga slika učita, ponovo pauziraj izvršavanje na 2 sekunde;
+6. Nakon što prođu 2 sekunde, sakrij trenutnu sliku.
+
+TEST PODACI: Slike se nalaze u img folderu. Testiraj error handler tako što ćeš proslijediti pogrešnu putanju slike. Postavi brzinu mreže na 'Fast 3G' u DevTools Network tabu, inače će se slike učitavati prebrzo.
+*/
+
+let currImg;
 
 const wait = function (seconds) {
   return new Promise(function (resolve) {
@@ -345,11 +403,34 @@ const wait = function (seconds) {
   });
 };
 
-wait(2)
-  .then(() => {
-    console.log("I waited 2 seconds");
-    return wait(1);
+function createImage(imgPath) {
+  const image = document.createElement("img");
+  image.src = imgPath;
+  return new Promise(function (resolve, reject) {
+    image.addEventListener("load", function () {
+      containerImages.append(image);
+      resolve(image);
+    });
+    image.addEventListener("error", function () {
+      reject(new Error("Image not found!"));
+    });
+  });
+}
+
+createImage("img-1 (1).jpg")
+  .then((img) => {
+    currImg = img;
+    return wait(2);
   })
   .then(() => {
-    console.log("I waited 1 second");
-  });
+    currImg.style.display = "none";
+    return createImage("img-2 (1).jpg");
+  })
+  .then((img2) => {
+    currImg = img2;
+    return wait(2);
+  })
+  .then(() => {
+    currImg.style.display = "none";
+  })
+  .catch((err) => console.error(err));
