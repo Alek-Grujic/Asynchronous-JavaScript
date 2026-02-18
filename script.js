@@ -43,30 +43,30 @@ const containerImages = document.querySelector(".images");
 
 // with a promise
 
-// function renderError(msg) {
-//   countriesContainer.insertAdjacentText("beforeend", msg);
-//   //   countriesContainer.style.opacity = 1;
-// }
+function renderError(msg) {
+  countriesContainer.insertAdjacentText("beforeend", msg);
+  //   countriesContainer.style.opacity = 1;
+}
 
-// const renderCountry = function (data, className = "") {
-//   console.log(data);
-//   const html = `
-//             <article class="country ${className}">
-//             <img class="country__img" src="${data.flag}" />
-//             <div class="country__data">
-//             <h3 class="country__name">${data.name}</h3>
-//             <h4 class="country__region">${data.region}</h4>
-//             <p class="country__row"><span>👫</span>${(
-//               +data.population / 1000000
-//             ).toFixed(1)} people</p>
-//             <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
-//             <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-//             </div>
-//             </article>
-//             `;
-//   countriesContainer.insertAdjacentHTML("beforeend", html);
-//   //   countriesContainer.style.opacity = 1;
-// };
+const renderCountry = function (data, className = "") {
+  console.log(data);
+  const html = `
+            <article class="country ${className}">
+            <img class="country__img" src="${data.flag}" />
+            <div class="country__data">
+            <h3 class="country__name">${data.name}</h3>
+            <h4 class="country__region">${data.region}</h4>
+            <p class="country__row"><span>👫</span>${(
+              +data.population / 1000000
+            ).toFixed(1)} people</p>
+            <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
+            <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+            </div>
+            </article>
+            `;
+  countriesContainer.insertAdjacentHTML("beforeend", html);
+  countriesContainer.style.opacity = 1;
+};
 
 // const getCountryData = function (country) {
 //   fetch(`https://restcountries.com/v2/name/${country}`)
@@ -395,42 +395,100 @@ DIO 2
 TEST PODACI: Slike se nalaze u img folderu. Testiraj error handler tako što ćeš proslijediti pogrešnu putanju slike. Postavi brzinu mreže na 'Fast 3G' u DevTools Network tabu, inače će se slike učitavati prebrzo.
 */
 
-let currImg;
+// let currImg;
 
-const wait = function (seconds) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, seconds * 1000);
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+// function createImage(imgPath) {
+//   const image = document.createElement("img");
+//   image.src = imgPath;
+//   return new Promise(function (resolve, reject) {
+//     image.addEventListener("load", function () {
+//       containerImages.append(image);
+//       resolve(image);
+//     });
+//     image.addEventListener("error", function () {
+//       reject(new Error("Image not found!"));
+//     });
+//   });
+// }
+
+// createImage("img-1 (1).jpg")
+//   .then((img) => {
+//     currImg = img;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currImg.style.display = "none";
+//     return createImage("img-2 (1).jpg");
+//   })
+//   .then((img2) => {
+//     currImg = img2;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currImg.style.display = "none";
+//   })
+//   .catch((err) => console.error(err));
+
+////////////////////////////////////////////////////////////////////////
+
+// async function loadImages() {
+//   try {
+//     let img = await createImage("img-1.jpg");
+//     await wait(2);
+//     img.style.display = "none";
+
+//     img = await createImage("img-2.jpg");
+//     await wait(2);
+//     img.style.display = "none";
+//   } catch (err) {
+//     console.error(err);
+//   }
+// }
+
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
 
-function createImage(imgPath) {
-  const image = document.createElement("img");
-  image.src = imgPath;
-  return new Promise(function (resolve, reject) {
-    image.addEventListener("load", function () {
-      containerImages.append(image);
-      resolve(image);
-    });
-    image.addEventListener("error", function () {
-      reject(new Error("Image not found!"));
-    });
-  });
-}
+// fetch(`https://restcountries.com/v2/name/${country}`).then(res => console.log(res))
 
-createImage("img-1 (1).jpg")
-  .then((img) => {
-    currImg = img;
-    return wait(2);
-  })
-  .then(() => {
-    currImg.style.display = "none";
-    return createImage("img-2 (1).jpg");
-  })
-  .then((img2) => {
-    currImg = img2;
-    return wait(2);
-  })
-  .then(() => {
-    currImg.style.display = "none";
-  })
-  .catch((err) => console.error(err));
+const whereAmI = async function () {
+  try {
+    // Geolocation
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
+
+    // Reverse geocoding
+    const resGeo = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+    );
+    if (!resGeo.ok) throw new Error("Problem getting location data");
+
+    const dataGeo = await resGeo.json();
+    console.log(dataGeo);
+
+    // Country data
+    const res = await fetch(
+      `https://restcountries.com/v2/name/${dataGeo.countryName}`,
+    );
+
+    if (!res.ok) throw new Error("Problem getting country");
+
+    const data = await res.json();
+    renderCountry(data[0]);
+  } catch (err) {
+    console.error(`${err} 💥`);
+    renderError(`💥 ${err.message}`);
+  }
+};
+
+btn.addEventListener("click", function () {
+  whereAmI();
+});
