@@ -49,7 +49,7 @@ function renderError(msg) {
 }
 
 const renderCountry = function (data, className = "") {
-  console.log(data);
+  //   console.log(data);
   const html = `
             <article class="country ${className}">
             <img class="country__img" src="${data.flag}" />
@@ -472,7 +472,7 @@ const whereAmI = async function () {
     if (!resGeo.ok) throw new Error("Problem getting location data");
 
     const dataGeo = await resGeo.json();
-    console.log(dataGeo);
+    // console.log(dataGeo);
 
     // Country data
     const res = await fetch(
@@ -483,12 +483,36 @@ const whereAmI = async function () {
 
     const data = await res.json();
     renderCountry(data[0]);
+
+    return `You are in ${dataGeo.city}, ${dataGeo.countryName}`;
   } catch (err) {
     console.error(`${err} 💥`);
     renderError(`💥 ${err.message}`);
+    throw err;
   }
 };
 
-btn.addEventListener("click", function () {
-  whereAmI();
-});
+// btn.addEventListener("click", function () {
+//   whereAmI();
+// });
+
+console.log("1: Will get location");
+// const city = whereAmI();
+// console.log(city);
+
+// whereAmI()
+//   .then((city) => console.log(`2: ${city}`))
+//   .catch((err) => console.error(`2: ${err.message}`))
+//   .finally(() => {
+//     console.log("3: Finished getting location");
+//   });
+
+(async function () {
+  try {
+    const cityAndCountry = await whereAmI();
+    console.log(`2: ${cityAndCountry}`);
+  } catch (err) {
+    console.error(`2: ${err.message}`);
+  }
+  console.log("3: Finished getting location");
+})();
