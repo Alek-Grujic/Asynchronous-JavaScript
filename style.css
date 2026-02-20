@@ -110,7 +110,7 @@ body {
 }
 
 .images {
-  display: flex;
+  /* display: flex; */
 }
 
 .images img {

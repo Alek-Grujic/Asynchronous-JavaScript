@@ -636,6 +636,27 @@ async function loadNPause() {
   }
 }
 
-loadNPause();
+// loadNPause();
 
 // part 2
+
+async function loadAll(imgArr) {
+  try {
+    const imgs = imgArr.map((path) => createImage(path));
+    const images = await Promise.allSettled(imgs);
+    console.log(images);
+
+    images.forEach((element) => {
+      if (element.status === "fulfilled") {
+        element.value.classList.add("parallel");
+      }
+      if (element.status === "rejected") {
+        console.error(element.reason);
+      }
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+loadAll([`iimg-1 (1).jpg`, `img-2 (1).jpg`, `img-3 (1).jpg`]);
